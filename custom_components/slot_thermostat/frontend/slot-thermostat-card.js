@@ -8,7 +8,7 @@
  *   name: Living room        # optional
  *   show_schedule: true      # optional, false hides the editor
  */
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_NAMES = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
 const WEEKDAYS = DAYS.slice(0, 5);

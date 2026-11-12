@@ -2,6 +2,7 @@
   "domain": "slot_thermostat",
   "name": "Slot Thermostat",
   "after_dependencies": ["frontend"],
+  "categories": ["climate.thermostats_heating", "climate.heat_pumps_air_conditioning"],
   "codeowners": ["@iamBiB"],
   "config_flow": true,
   "dependencies": ["http", "websocket_api"],
@@ -10,5 +11,5 @@
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/iamBiB/ha-slot-thermostat/issues",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }

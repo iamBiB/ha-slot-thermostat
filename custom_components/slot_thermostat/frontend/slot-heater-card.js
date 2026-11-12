@@ -7,7 +7,7 @@
  *   entity: sensor.boiler_status
  *   name: Boiler     # optional
  */
-const HEATER_VERSION = '0.1.0';
+const HEATER_VERSION = '0.1.1';
 
 const hesc = (s) =>
     String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
