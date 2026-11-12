@@ -1,6 +1,7 @@
-<img src="docs/images/icon.svg" alt="" width="96" align="right">
+<p align="center"><img src="custom_components/slot_thermostat/brand/icon@2x.png" alt="Slot Thermostat icon" width="128"></p>
 
 # Slot Thermostat
+[![](https://img.shields.io/github/release/iamBiB/ha-slot-thermostat.svg?style=flat-square)](https://github.com/iamBiB/ha-slot-thermostat/releases/latest)
 
 A Home Assistant thermostat that follows a schedule of **named time slots**, controls **heating, cooling or both**, and lets several rooms share one boiler or AC. It comes with two cards: one for the thermostat and its schedule, and one for a shared boiler.
 
@@ -15,6 +16,11 @@ Outside the slots the thermostat does nothing, so heating and cooling stay off.
 | Slot Thermostat card | Schedule editor | Slot Heater card |
 |---|---|---|
 | ![Slot Thermostat card](docs/images/thermostat-card.png) | ![Schedule editor](docs/images/schedule-editor.png) | ![Slot Heater card](docs/images/heater-card.png) |
+
+## Support
+Hey dude! If you like it .. well :beers: or a :coffee: would be nice :D
+
+[![coffee](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/fhc0C7A)
 
 ## Features
 - **Named slots.** Each slot has a title, start, end and temperature. Use one schedule for every day, or one per weekday, with "copy Monday to weekdays / weekend / all days".
