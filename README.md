@@ -20,6 +20,8 @@ Outside the slots the thermostat does nothing, so heating and cooling stay off.
 ## Support
 Hey dude! If you like it .. well :beers: or a :coffee: would be nice :D
 
+Questions, ideas or bugs? Join the [discussion on the Home Assistant community forum](https://community.home-assistant.io/t/github-iambib-ha-slot-thermostat-home-assistant-thermostat-with-named-time-slot/1034188) or open a [GitHub issue](https://github.com/iamBiB/ha-slot-thermostat/issues).
+
 [![coffee](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/fhc0C7A)
 
 ## Features
