@@ -1,0 +1,14 @@
+{
+  "domain": "slot_thermostat",
+  "name": "Slot Thermostat",
+  "after_dependencies": ["frontend"],
+  "codeowners": ["@iamBiB"],
+  "config_flow": true,
+  "dependencies": ["http", "websocket_api"],
+  "documentation": "https://github.com/iamBiB/ha-slot-thermostat",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/iamBiB/ha-slot-thermostat/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

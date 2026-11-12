@@ -1,0 +1,239 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Slot Thermostat",
+        "description": "What do you want to add?",
+        "menu_options": {
+          "thermostat": "Thermostat (a room or zone)",
+          "boiler": "Shared device (boiler, heat pump or AC used by several thermostats)"
+        }
+      },
+      "thermostat": {
+        "title": "New Slot Thermostat",
+        "description": "Pick at least one of heating switches, cooling switches or AC devices.",
+        "data": {
+          "name": "Name",
+          "temperature_sensors": "Temperature sensors",
+          "heaters": "Heating switches",
+          "coolers": "Cooling switches",
+          "climate_devices": "AC / climate devices",
+          "window_sensors": "Window / door sensors",
+          "start_margin": "Start margin",
+          "stop_margin": "Stop margin",
+          "heat_cool_gap": "Heat/Cool gap",
+          "min_cycle_minutes": "Minimum on/off time",
+          "min_temp": "Lowest settable temperature",
+          "max_temp": "Highest settable temperature",
+          "target_temp_step": "Temperature step"
+        },
+        "data_description": {
+          "name": "For example: Living room",
+          "temperature_sensors": "One or more sensors. The thermostat uses their average and ignores unavailable ones.",
+          "heaters": "Optional. Switched on when heat is needed, e.g. a boiler relay or a zone-demand switch.",
+          "coolers": "Optional. Switched on when cooling is needed.",
+          "climate_devices": "Optional. Put into heat or cool mode with the target temperature when needed, and turned off when not. Used for heating and/or cooling depending on what each device supports.",
+          "window_sensors": "Optional. While any is open, heating and cooling pause.",
+          "start_margin": "How far the temperature must drift from the target before heating or cooling starts (heating starts at target − margin, cooling at target + margin).",
+          "stop_margin": "How far past the target to keep going before stopping (heating stops at target + margin, cooling at target − margin).",
+          "heat_cool_gap": "Only in Heat/Cool mode: cooling aims for the target plus this gap, so heating and cooling never fight.",
+          "min_cycle_minutes": "Shortest time between switching, to protect boilers and compressors. Safety stops (off, window open, no reading) ignore it."
+        }
+      },
+      "boiler": {
+        "title": "Shared device",
+        "description": "Several thermostats can use the same switch or AC: it runs while any of them needs it. A shared AC follows \"first request wins\": it keeps heating (or cooling) while any room still wants that, then switches over. This adds protection and run statistics for the device.",
+        "data": {
+          "name": "Name",
+          "switch": "Device",
+          "keep_alive_minutes": "Re-send ON every",
+          "max_run_minutes": "Maximum run time",
+          "rest_minutes": "Rest after maximum run",
+          "notify": "Show notifications",
+          "enforce_off": "Turn off when running with no request"
+        },
+        "data_description": {
+          "switch": "The switch or AC the thermostats use. It runs while any of them needs it.",
+          "keep_alive_minutes": "Switches only: for relays with their own auto-off timer, re-send ON while running. 0 = off.",
+          "max_run_minutes": "Turn off after running this long without a break, then rest. 0 = no limit.",
+          "rest_minutes": "How long to stay off after hitting the maximum run time.",
+          "notify": "Notify when the maximum run time is hit, or when the device was turned off for running with no request.",
+          "enforce_off": "If something turns the device on while no thermostat is asking, turn it off after 2 minutes. Disable this if you also use the device by hand."
+        }
+      }
+    },
+    "error": {
+      "required": "Select at least one entity.",
+      "no_devices": "Pick at least one heating switch, cooling switch or AC device.",
+      "device_is_sensor": "An entity can't be both a sensor and a controlled device.",
+      "heater_is_cooler": "A switch can't be both a heating and a cooling switch.",
+      "max_below_min": "Must be higher than the lowest temperature.",
+      "gap_too_small": "Must be at least the stop margin, otherwise heating and cooling could fight."
+    },
+    "abort": {
+      "already_configured": "This device is already set up as a shared device."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "menu_options": {
+          "settings": "Devices & tuning",
+          "schedule": "Schedule"
+        },
+        "data": {
+          "keep_alive_minutes": "Re-send ON every",
+          "max_run_minutes": "Maximum run time",
+          "rest_minutes": "Rest after maximum run",
+          "notify": "Show notifications",
+          "enforce_off": "Turn off when running with no request"
+        },
+        "data_description": {
+          "keep_alive_minutes": "Switches only: for relays with their own auto-off timer, re-send ON while running. 0 = off.",
+          "max_run_minutes": "Turn off after running this long without a break, then rest. 0 = no limit.",
+          "rest_minutes": "How long to stay off after hitting the maximum run time.",
+          "notify": "Notify when the maximum run time is hit, or when the device was turned off for running with no request.",
+          "enforce_off": "If something turns the device on while no thermostat is asking, turn it off after 2 minutes. Disable this if you also use the device by hand."
+        }
+      },
+      "settings": {
+        "title": "Devices & tuning",
+        "description": "Pick at least one of heating switches, cooling switches or AC devices.",
+        "data": {
+          "temperature_sensors": "Temperature sensors",
+          "heaters": "Heating switches",
+          "coolers": "Cooling switches",
+          "climate_devices": "AC / climate devices",
+          "window_sensors": "Window / door sensors",
+          "start_margin": "Start margin",
+          "stop_margin": "Stop margin",
+          "heat_cool_gap": "Heat/Cool gap",
+          "min_cycle_minutes": "Minimum on/off time",
+          "min_temp": "Lowest settable temperature",
+          "max_temp": "Highest settable temperature",
+          "target_temp_step": "Temperature step"
+        },
+        "data_description": {
+          "temperature_sensors": "One or more sensors. The thermostat uses their average and ignores unavailable ones.",
+          "heaters": "Optional. Switched on when heat is needed, e.g. a boiler relay or a zone-demand switch.",
+          "coolers": "Optional. Switched on when cooling is needed.",
+          "climate_devices": "Optional. Put into heat or cool mode with the target temperature when needed, and turned off when not. Used for heating and/or cooling depending on what each device supports.",
+          "window_sensors": "Optional. While any is open, heating and cooling pause.",
+          "start_margin": "How far the temperature must drift from the target before heating or cooling starts (heating starts at target − margin, cooling at target + margin).",
+          "stop_margin": "How far past the target to keep going before stopping (heating stops at target + margin, cooling at target − margin).",
+          "heat_cool_gap": "Only in Heat/Cool mode: cooling aims for the target plus this gap, so heating and cooling never fight.",
+          "min_cycle_minutes": "Shortest time between switching, to protect boilers and compressors. Safety stops (off, window open, no reading) ignore it."
+        }
+      },
+      "schedule": {
+        "title": "Schedule type",
+        "description": "Every day uses one list of slots for all days. Per weekday gives each day its own list.",
+        "data": {
+          "mode": "Schedule type"
+        }
+      },
+      "days": {
+        "title": "Schedule per weekday",
+        "description": "Pick a day to edit its slots. Changes are applied when you select **Save schedule**."
+      },
+      "slots": {
+        "title": "Slots",
+        "description": "**{day}**\n\n{slots}\n\nOutside these slots heating and cooling stay off. An end time before the start runs past midnight (+1). Changes are applied when you select **Save schedule**."
+      },
+      "slot_form": {
+        "title": "Slot",
+        "description": "{error}",
+        "data": {
+          "title": "Title",
+          "start": "Start",
+          "end": "End",
+          "temp": "Temperature"
+        },
+        "data_description": {
+          "title": "For example: Leaving home",
+          "end": "Before the start = runs past midnight."
+        }
+      },
+      "edit_slot": {
+        "title": "Edit a slot",
+        "data": {
+          "slot": "Slot"
+        }
+      },
+      "remove_slot": {
+        "title": "Remove slots",
+        "data": {
+          "slots": "Slots to remove"
+        }
+      },
+      "copy_day": {
+        "title": "Copy a day",
+        "description": "{error}",
+        "data": {
+          "from_day": "Copy from",
+          "to_days": "To"
+        }
+      }
+    },
+    "error": {
+      "required": "Select at least one entity.",
+      "no_devices": "Pick at least one heating switch, cooling switch or AC device.",
+      "device_is_sensor": "An entity can't be both a sensor and a controlled device.",
+      "heater_is_cooler": "A switch can't be both a heating and a cooling switch.",
+      "max_below_min": "Must be higher than the lowest temperature.",
+      "gap_too_small": "Must be at least the stop margin, otherwise heating and cooling could fight.",
+      "invalid_schedule": "{error}"
+    }
+  },
+  "entity": {
+    "climate": {
+      "slot_thermostat": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "schedule": "Schedule",
+              "manual": "Manual"
+            }
+          }
+        }
+      }
+    },
+    "sensor": {
+      "boiler_status": {
+        "name": "Status",
+        "state": {
+          "heating": "Heating",
+          "cooling": "Cooling",
+          "running": "Running",
+          "resting": "Resting",
+          "off": "Off"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Set schedule",
+      "description": "Replace the schedule of a Slot Thermostat. Clears any temporary override.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "Object with mode (daily or weekly), daily (list of slots) and weekly (mon…sun lists of slots). A slot has title, start, end (HH:MM) and temp."
+        }
+      }
+    },
+    "clear_override": {
+      "name": "Clear override",
+      "description": "Drop a temporary temperature change and follow the schedule again."
+    }
+  },
+  "selector": {
+    "schedule_mode": {
+      "options": {
+        "daily": "Every day",
+        "weekly": "Per weekday"
+      }
+    }
+  }
+}

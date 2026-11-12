@@ -1,0 +1,17 @@
+set_schedule:
+  target:
+    entity:
+      integration: slot_thermostat
+      domain: climate
+  fields:
+    schedule:
+      required: true
+      example: '{"mode": "daily", "daily": [{"title": "Morning", "start": "06:30", "end": "09:00", "temp": 21}]}'
+      selector:
+        object:
+
+clear_override:
+  target:
+    entity:
+      integration: slot_thermostat
+      domain: climate
