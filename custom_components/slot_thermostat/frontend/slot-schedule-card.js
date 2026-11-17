@@ -9,7 +9,7 @@
  *   show_list: true          # optional, false shows only the timeline
  *   embedded: false          # optional, true drops the card frame (used inside the thermostat card)
  */
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_NAMES = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
 const WEEKDAYS = DAYS.slice(0, 5);

@@ -13,7 +13,7 @@
  *       icon: mdi:water-outline        # optional, else by the sensor's type
  *   Without info_icons the card shows the room's humidity by itself; [] shows none.
  */
-const VERSION = '0.2.0-preview.2';
+const VERSION = '0.2.0';
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const DAY_NAMES = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
 const WEEKDAYS = DAYS.slice(0, 5);
@@ -202,9 +202,9 @@ hr { border: 0; border-top: 1px solid var(--st-line); margin: 16px 0; }
 
 /* the dial: drag the knob (only the knob, so scrolling past it is safe) */
 .dial { --dial: var(--st-heat); position: relative; width: min(100%, 290px); aspect-ratio: 1; margin: 0 auto -30px; }
-.dial[data-mode="cool"] { --dial: var(--st-cool); }
-.dial[data-mode="steady"] { --dial: var(--st-ok); }
-.dial[data-mode="off"] { --dial: var(--st-muted); }
+.dial[data-kind="cool"] { --dial: var(--st-cool); }
+.dial[data-kind="steady"] { --dial: var(--st-ok); }
+.dial[data-kind="off"] { --dial: var(--st-muted); }
 .dial__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; touch-action: pan-y; }
 .dial__track { fill: none; stroke: var(--st-fill-strong); stroke-width: 16; stroke-linecap: round; }
 .dial__fill { fill: none; stroke: var(--dial); stroke-width: 16; stroke-linecap: round; transition: stroke .3s; }
@@ -215,12 +215,12 @@ hr { border: 0; border-top: 1px solid var(--st-line); margin: 16px 0; }
 .dial__thumb { fill: #fff; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .4)); }
 .dial__pip { fill: var(--dial); }
 .dial__knob:focus-visible .dial__thumb { stroke: var(--st-accent); stroke-width: 3; }
-.dial[data-mode="off"] .dial__fill, .dial[data-mode="off"] .dial__knob { display: none; }
+.dial[data-kind="off"] .dial__fill, .dial[data-kind="off"] .dial__knob { display: none; }
 .dial__center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; pointer-events: none; text-align: center; }
 .dial__status { font-size: 13px; color: var(--st-muted); }
 .dial__status[hidden] { display: none; }
 .dial__value { font-size: 60px; font-weight: 600; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
-.dial[data-mode="off"] .dial__value { font-size: 44px; }
+.dial[data-kind="off"] .dial__value { font-size: 44px; }
 
 /* − note + */
 .dialbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 2px 0 18px; }
@@ -429,7 +429,7 @@ class SlotThermostatCard extends HTMLElement {
 
     _buildDial() {
         this._dialBox.innerHTML = `
-          <div class="dial" data-mode="heat">
+          <div class="dial" data-kind="heat">
             <svg class="dial__svg" viewBox="0 0 280 280">
               <path class="dial__track" d="${dialArc(DIAL.A0, DIAL.A0 + DIAL.SWEEP)}"/><path class="dial__fill"/><circle class="dial__now" r="5"/>
               <g class="dial__knob" tabindex="0" role="slider" aria-label="Target temperature">
@@ -510,7 +510,7 @@ class SlotThermostatCard extends HTMLElement {
         // colour and text follow what the thermostat is doing: heating, cooling or steady
         const action = a.hvac_action;
         const kind = off ? 'off' : action === 'heating' ? 'heat' : action === 'cooling' ? 'cool' : 'steady';
-        dial.dataset.mode = kind;
+        dial.dataset.kind = kind;
         value.textContent = off ? 'Off' : `${v.toFixed(1)}°`;
         status.textContent = off ? '' : kind === 'heat' ? 'Heating to' : kind === 'cool' ? 'Cooling to' : 'Steady at';
         status.hidden = off;

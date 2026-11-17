@@ -122,7 +122,7 @@ await tick(); await tick();
 const r2 = card2.shadowRoot;
 const q2 = (sel) => r2.querySelector(sel);
 assert.ok(q2('.dial .dial__knob'), 'own dial');
-assert.equal(q2('.dial').dataset.mode, 'cool', 'arc colour follows hvac_action');
+assert.equal(q2('.dial').dataset.kind, 'cool', 'arc colour follows hvac_action');
 assert.equal(q2('.dial__value').textContent, '21.0°');
 assert.equal(q2('.dial__status').textContent, 'Cooling to');
 assert.equal(q2('.dial__nowchip').textContent, 'Now 24.1°');
