@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/js/card.test.mjs custom_components/slot_thermostat/frontend/slot-thermostat-card.js && node tests/js/heater.test.mjs custom_components/slot_thermostat/frontend/slot-heater-card.js"
+    "test": "node tests/js/card.test.mjs custom_components/slot_thermostat/frontend/slot-thermostat-card.js && node tests/js/heater.test.mjs custom_components/slot_thermostat/frontend/slot-heater-card.js && node tests/js/schedule.test.mjs custom_components/slot_thermostat/frontend/slot-schedule-card.js"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"

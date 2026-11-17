@@ -23,6 +23,8 @@ from .const import (
     ENTRY_TYPE_BOILER,
     HEATER_CARD_FILENAME,
     HEATER_CARD_URL,
+    SCHEDULE_CARD_FILENAME,
+    SCHEDULE_CARD_URL,
     STORAGE_VERSION,
 )
 from .coordinator import get_manager
@@ -72,6 +74,7 @@ async def _async_register_card(hass: HomeAssistant) -> None:
         [
             StaticPathConfig(CARD_URL, str(folder / CARD_FILENAME), cache_headers=False),
             StaticPathConfig(HEATER_CARD_URL, str(folder / HEATER_CARD_FILENAME), cache_headers=False),
+            StaticPathConfig(SCHEDULE_CARD_URL, str(folder / SCHEDULE_CARD_FILENAME), cache_headers=False),
         ]
     )
     if "frontend" not in hass.config.components:
@@ -82,6 +85,7 @@ async def _async_register_card(hass: HomeAssistant) -> None:
     # The version query makes browsers fetch the new card after an update.
     add_extra_js_url(hass, f"{CARD_URL}?v={integration.version}")
     add_extra_js_url(hass, f"{HEATER_CARD_URL}?v={integration.version}")
+    add_extra_js_url(hass, f"{SCHEDULE_CARD_URL}?v={integration.version}")
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SlotThermostatConfigEntry) -> bool:

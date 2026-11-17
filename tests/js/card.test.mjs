@@ -16,7 +16,8 @@ const hass = {
   states: { 'climate.living': { state: 'heat_cool', attributes: {
     friendly_name: 'Living', hvac_modes: ['heat', 'cool', 'heat_cool', 'off'], hvac_action: 'cooling', preset_mode: 'schedule',
     current_temperature: 24.1, temperature: 21, cool_above: 23, active_slot: 'Leaving home', slot_temperature: 21, slot_end: new Date(Date.now() + 3600e3).toISOString(),
-    min_temp: 5, max_temp: 30, target_temp_step: 0.5 } } },
+    current_humidity: 46, min_temp: 5, max_temp: 30, target_temp_step: 0.5 } },
+    'sensor.living_humidity': { state: '52.4', attributes: {} } },
   callWS: async (msg) => {
     calls.push(msg);
     if (msg.type.endsWith('/get')) return { schedule: JSON.parse(JSON.stringify(saved)), min_temp: 5, max_temp: 30, step: 0.5 };
@@ -43,7 +44,8 @@ $('.toggle').click();
 assert.equal($('.toggle').getAttribute('aria-expanded'), 'true');
 assert.match(text(), /Cooling/); assert.match(text(), /cools above 23\.0°/); assert.match(text(), /Leaving home · 21.0° · until/);
 assert.deepStrictEqual($$('[data-mode]').map((b) => b.textContent), ['Heat', 'Cool', 'Heat/Cool', 'Off']);
-assert.equal($('[data-mode="heat_cool"]').className, 'on');
+assert.ok($('[data-mode="heat_cool"]').classList.contains('on'));
+assert.equal($('[data-mode="heat_cool"]').getAttribute('aria-pressed'), 'true');
 assert.equal($$('input[data-f="title"]').length, 1);
 assert.equal($('[data-act="save"]').disabled, true);
 assert.equal($$('.timeline .block').length, 1);
@@ -111,31 +113,69 @@ const before = $$('input[data-f="title"]')[0];
 card.hass = { ...hass };
 assert.equal($$('input[data-f="title"]')[0], before);
 
-// With Home Assistant's card helpers available, the built-in thermostat dial is embedded
-let dialConfig = null;
-window.loadCardHelpers = async () => ({
-  createCardElement: (cfg) => { dialConfig = cfg; const el = doc.createElement('div'); el.className = 'fake-dial'; el.setConfig = (c) => (dialConfig = c); return el; },
-});
+// The card draws its own dial (the Atrium design), with a humidity chip and round mode buttons
 const card2 = doc.createElement('slot-thermostat-card');
 card2.setConfig({ entity: 'climate.living', schedule_open: true });
 doc.body.appendChild(card2);
 card2.hass = hass;
 await tick(); await tick();
 const r2 = card2.shadowRoot;
-assert.ok(r2.querySelector('.dial .fake-dial'), 'dial embedded');
-assert.equal(dialConfig.type, 'thermostat');
-assert.equal(JSON.stringify(dialConfig.features[0].hvac_modes), JSON.stringify(['heat', 'cool', 'heat_cool', 'off']));
-assert.equal(dialConfig.features.length, 1);
+const q2 = (sel) => r2.querySelector(sel);
+assert.ok(q2('.dial .dial__knob'), 'own dial');
+assert.equal(q2('.dial').dataset.mode, 'cool', 'arc colour follows hvac_action');
+assert.equal(q2('.dial__value').textContent, '21.0°');
+assert.equal(q2('.dial__status').textContent, 'Cooling to');
+assert.equal(q2('.dial__nowchip').textContent, 'Now 24.1°');
+assert.equal(q2('.card__title').textContent, 'Living');
+assert.match(q2('.card__head .chip').textContent, /46%/);
+assert.equal([...r2.querySelectorAll('.mode')].length, 4, 'round mode buttons');
 const presetBtns = [...r2.querySelectorAll('.presets button')];
 assert.equal(presetBtns.map((b) => b.textContent.trim()).join(','), 'Schedule,Manual');
 assert.equal(presetBtns[0].className, 'on');
 assert.ok(presetBtns[0].querySelector('ha-icon[icon="mdi:calendar-clock"]'));
 presetBtns[1].click();
 assert.equal(JSON.stringify(calls.filter(Array.isArray).at(-1)), JSON.stringify(['climate', 'set_preset_mode', { entity_id: 'climate.living', preset_mode: 'manual' }]));
-assert.equal(r2.querySelector('.fake-dial').hass, hass);
-assert.ok(!r2.querySelector('[data-mode]'), 'own mode buttons hidden when dial is shown');
-assert.match(r2.querySelector('.head').textContent, /Leaving home · 21.0° · until/);
+assert.match(q2('.dialbar__note').textContent, /Leaving home · 21.0° · until/);
 assert.ok(r2.querySelector('.editor .grid'), 'schedule editor still there');
+
+// a state update that changes nothing keeps the buttons (no flicker on hover)
+const schedBtn = q2('[data-preset="schedule"]');
+card2.hass = { ...hass };
+assert.equal(q2('[data-preset="schedule"]'), schedBtn);
+
+// + sends one set_temperature after a short pause, and the dial shows the new value at once
+q2('[data-step="1"]').click();
+assert.equal(q2('.dial__value').textContent, '21.5°');
+await new Promise((r) => setTimeout(r, 700));
+assert.equal(JSON.stringify(calls.filter(Array.isArray).at(-1)), JSON.stringify(['climate', 'set_temperature', { entity_id: 'climate.living', temperature: 21.5 }]));
+
+// info_icons: any entities, with an icon each; a chip opens its entity
+const states3 = { ...hass.states, 'sensor.living_humidity': { state: '52.4', attributes: { device_class: 'humidity' } },
+  'sensor.co2': { state: '612', attributes: { unit_of_measurement: 'ppm', friendly_name: 'CO2' } } };
+card2.setConfig({ entity: 'climate.living', info_icons: [{ entity: 'sensor.living_humidity', icon: 'mdi:water' }, { entity: 'sensor.co2', icon: 'mdi:molecule-co2' }] });
+card2.hass = { ...hass, states: states3 };
+const chips = [...r2.querySelectorAll('.card__head .chip')];
+assert.deepStrictEqual(chips.map((c) => c.textContent), ['52%', '612 ppm']);
+assert.ok(chips[1].querySelector('ha-icon[icon="mdi:molecule-co2"]'));
+let more = null;
+card2.addEventListener('hass-more-info', (e) => (more = e.detail.entityId));
+chips[1].click();
+assert.equal(more, 'sensor.co2');
+// no humidity on the thermostat: the humidity sensor on the temperature sensor's device
+const noHum = JSON.parse(JSON.stringify(hass.states));
+delete noHum['climate.living'].attributes.current_humidity;
+noHum['climate.living'].attributes.temperature_sensors = ['sensor.living_temp'];
+noHum['sensor.living_temp'] = { state: '21.2', attributes: { device_class: 'temperature' } };
+noHum['sensor.living_hum'] = { state: '61', attributes: { device_class: 'humidity' } };
+card2.setConfig({ entity: 'climate.living' });
+card2.hass = { ...hass, states: noHum, entities: { ...hass.entities,
+  'sensor.living_temp': { entity_id: 'sensor.living_temp', device_id: 'dev1' },
+  'sensor.living_hum': { entity_id: 'sensor.living_hum', device_id: 'dev1' } } };
+assert.match(q2('.card__head .chip').textContent, /61%/);
+card2.setConfig({ entity: 'climate.living', info_icons: [] });
+card2.hass = { ...hass };
+assert.equal(q2('.card__head .chip'), null);
+card2.remove();
 // after saving it collapses again on demand
 $('.toggle').click();
 assert.ok(!$('input[data-f="title"]'));

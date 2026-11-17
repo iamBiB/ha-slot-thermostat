@@ -104,6 +104,7 @@ ATTR_COOL_ABOVE = "cool_above"
 ATTR_SCHEDULE_MODE = "schedule_mode"
 ATTR_WINDOW_OPEN = "window_open"
 ATTR_SENSORS_AVAILABLE = "sensors_available"
+ATTR_TEMPERATURE_SENSORS = "temperature_sensors"
 ATTR_REASON = "reason"
 ATTR_STATUS = "status"
 
@@ -302,6 +303,8 @@ class SlotThermostat(ClimateEntity, RestoreEntity):
             ATTR_SCHEDULE_MODE: self._schedule["mode"],
             ATTR_WINDOW_OPEN: self._window_open,
             ATTR_SENSORS_AVAILABLE: f"{self._sensors_available}/{len(self._sensors)}",
+            # lets the card find e.g. the humidity sensor on the same device
+            ATTR_TEMPERATURE_SENSORS: list(self._sensors),
             ATTR_REASON: self._reason,
             ATTR_STATUS: self._status_text(upcoming),
         }

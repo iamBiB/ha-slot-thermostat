@@ -51,6 +51,8 @@ HEATER_CARD_FILENAME = "slot-heater-card.js"
 
 CARD_URL = "/slot_thermostat/slot-thermostat-card.js"
 CARD_FILENAME = "slot-thermostat-card.js"
+SCHEDULE_CARD_URL = "/slot_thermostat/slot-schedule-card.js"
+SCHEDULE_CARD_FILENAME = "slot-schedule-card.js"
 
 ATTR_SCHEDULE = "schedule"
 

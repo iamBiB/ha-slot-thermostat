@@ -3,7 +3,7 @@
 # Slot Thermostat
 [![](https://img.shields.io/github/release/iamBiB/ha-slot-thermostat.svg?style=flat-square)](https://github.com/iamBiB/ha-slot-thermostat/releases/latest)
 
-A Home Assistant thermostat that follows a schedule of **named time slots**, controls **heating, cooling or both**, and lets several rooms share one boiler or AC. It comes with two cards: one for the thermostat and its schedule, and one for a shared boiler.
+A Home Assistant thermostat that follows a schedule of **named time slots**, controls **heating, cooling or both**, and lets several rooms share one boiler or AC. It comes with three cards: one for the thermostat, one for its schedule on a timeline, and one for a shared boiler.
 
 | Title        | Start | End   | Temp   |
 |--------------|-------|-------|--------|
@@ -13,9 +13,9 @@ A Home Assistant thermostat that follows a schedule of **named time slots**, con
 
 Outside the slots the thermostat does nothing, so heating and cooling stay off.
 
-| Slot Thermostat card | Schedule editor | Slot Heater card |
+| Slot Thermostat card | Slot Schedule card | Slot Heater card |
 |---|---|---|
-| ![Slot Thermostat card](docs/images/thermostat-card.png) | ![Schedule editor](docs/images/schedule-editor.png) | ![Slot Heater card](docs/images/heater-card.png) |
+| ![Slot Thermostat card](docs/images/thermostat-card.png) | ![Slot Schedule card](docs/images/schedule-card.png) | ![Slot Heater card](docs/images/heater-card.png) |
 
 ## Support
 Hey dude! If you like it .. well :beers: or a :coffee: would be nice :D
@@ -33,6 +33,7 @@ Questions, ideas or bugs? Join the [discussion on the Home Assistant community f
 - **Temporary overrides.** Changing the temperature holds until the next slot, then the schedule takes over again.
 - **Boiler protection:** a maximum run time with a rest, keep-alive re-sends, an automatic turn-off when it runs with no room asking, and run statistics.
 - **Safe by default.** Nothing runs with no slot, no temperature reading or an open window. Everything the thermostats were running is turned off when Home Assistant shuts down.
+- **Three cards included.** A thermostat card with a dial, round mode buttons and info chips (humidity and more); a schedule card with the day on a timeline, where slots are added and edited in place; and a card for the shared boiler. They take their colours from your theme.
 
 ---
 
@@ -53,7 +54,7 @@ Requires Home Assistant 2026.11 or newer (with the Marketplace).
 1. Copy `custom_components/slot_thermostat` from the latest release into `config/custom_components/`.
 2. **Restart Home Assistant.**
 
-Both cards are part of the integration and load automatically. There's no dashboard resource to add.
+All three cards are part of the integration and load automatically. There's no dashboard resource to add.
 
 ---
 <!-- ha-marketplace:exclude-end -->
@@ -94,34 +95,56 @@ entity: climate.living_room
 ```
 
 The card shows:
-- **The dial:** Home Assistant's thermostat dial, with the current and target temperature and −/+ buttons. It's orange while heating and blue while cooling.
-- **The mode bar:** Heat / Cool / Heat-Cool / Off. Only the modes your devices support appear.
+- **The header:** the thermostat's name and what it's doing (Heating, Idle…), with info chips on the right (the room's humidity by default).
+- **The dial:** drag the knob (only the knob, so scrolling past the card on a phone is safe) or use the arrow keys. The centre shows *Heating to 22.0°* and a *Now 20.8°* chip; the small dot on the arc is the current temperature. The arc is orange while heating, blue while cooling and green when steady. A drag sends one change when you let go.
+- **− and +** with the status between them, for example *Leaving home · 21° · until 10:00*, or *Override 23° · until 14:00 · Back to schedule*. The buttons send after a short pause, so several taps make one change.
+- **The modes:** a round button each for Heat / Cool / Heat-Cool / Off. Only the modes your devices support appear.
 - **Schedule | Manual:** where the target comes from.
-- **The status line:** for example *Leaving home · 21° · until 10:00*, or *Override 23° · until 14:00 · Back to schedule*.
-- **Schedule row:** **📅 Schedule · 3 slots today**. Tap it to open the editor.
+- **Schedule row:** **Schedule · 3 slots today**. Tap it to open the schedule right inside the card: the same timeline and slot list as the Slot Schedule card (section 4).
 
 Card options:
 ```yaml
 type: custom:slot-thermostat-card
 entity: climate.living_room
 name: Living room       # optional
-schedule_open: false    # optional, true shows the schedule editor expanded
+schedule_open: false    # optional, true shows the schedule open
 show_schedule: true     # optional, false hides the schedule row entirely
-dial: true              # optional, false uses a simple header instead of the dial
+dial: true              # optional, false shows the temperatures as text instead of the dial
+info_icons:             # optional, chips in the top-right corner
+  - entity: sensor.living_room_humidity
+    icon: mdi:water-outline
+  - entity: sensor.living_room_co2
+    icon: mdi:molecule-co2
 ```
+
+**Info chips:** each entry in `info_icons` shows that entity's value (with its unit) in the top-right corner; `icon` is optional and otherwise follows the sensor's type. Tapping a chip opens the entity. Without `info_icons` the card shows the room's humidity by itself: the thermostat's own humidity if it has one, otherwise the humidity sensor on the same device as one of its temperature sensors, otherwise one in the thermostat's area. `info_icons: []` shows no chips.
+
+The card takes its colours from your theme, so it fits any theme; with the Atrium theme it matches the rest of an Atrium dashboard.
 
 ## 4. Build the schedule
 
-### In the card
-1. Tap **📅 Schedule** to open the editor.
-2. Choose **Every day**, or **Per weekday** and then a day.
-3. Select **+ Add slot**. A row appears that starts where the previous slot ended.
-4. Fill in **Title**, **Start**, **End** and **°**.
-   - An end time earlier than the start runs past midnight and is marked **+1**.
-   - An end of 00:00 means "until midnight".
-5. Repeat for each slot. The timeline bar shows the day as you go. Overlapping slots are flagged in red and block saving.
-6. *(Per weekday)* Use **Copy Mon to: Weekdays · Weekend · All days** to reuse a day.
-7. Select **Save**. **Revert** throws away unsaved changes.
+### In the cards
+The schedule opens from the **Schedule** row of the thermostat card, or add the **Slot Schedule** card on its own (search for it under **Add card**):
+
+```yaml
+type: custom:slot-schedule-card
+entity: climate.living_room
+title: Schedule          # optional
+show_list: true          # optional, false shows only the timeline
+```
+
+It shows the day as a timeline: a block per slot, coloured from cool to warm by its temperature, a line for now, and the hours below. Underneath, the slots as a list, with the current one highlighted.
+
+1. Choose **Every day** or **Per weekday** at the bottom. The first switch to per weekday copies the daily slots to every day.
+2. *(Per weekday)* Pick a day at the top. A dot marks the days that have slots.
+3. Select **Add slot**. It starts where the last slot ends.
+4. Fill in **Title**, **Start**, **End** and the temperature (− / +), then select **Add**.
+   - An end time earlier than the start runs past midnight and is marked **(+1)**.
+   - An end of 23:59 means "until midnight".
+5. To change a slot, select **Edit** (or tap its block on the timeline). **Delete** removes it.
+6. *(Per weekday)* Use **Copy Mon to weekdays · weekend · all days** to reuse a day.
+
+Every change is saved right away. Overlapping slots and temperatures outside the thermostat's range are refused with a message, and nothing is saved. The card takes its colours from your theme, so it fits any theme; with the Atrium theme it matches the rest of an Atrium dashboard.
 
 ### In the settings
 1. Go to **Settings → Devices & services → Slot Thermostat** and select **Configure** on the thermostat.
@@ -132,7 +155,7 @@ dial: true              # optional, false uses a simple header instead of the di
 5. Add or edit slots; each opens a small form. Overlaps are rejected right there.
 6. Select **Save schedule**. Nothing is applied before that.
 
-The card and the settings edit the same schedule.
+The cards and the settings edit the same schedule.
 
 ---
 
@@ -230,7 +253,7 @@ Times are `HH:MM`; seconds are ignored. `24:00` (or `23:59`) means "until midnig
 - `active_slot`, `slot_temperature`, `slot_start`, `slot_end`
 - `next_slot`, `next_slot_start`, `next_change`
 - `override_temperature`, `override_until`, `manual_temperature`
-- `cool_above` (in Heat/Cool mode), `window_open`, `sensors_available` (e.g. `2/2`)
+- `cool_above` (in Heat/Cool mode), `window_open`, `sensors_available` (e.g. `2/2`), `temperature_sensors`
 - `reason` (why it is or isn't heating or cooling)
 
 ### Shared device sensor
